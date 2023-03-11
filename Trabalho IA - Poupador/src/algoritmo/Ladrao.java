@@ -18,8 +18,40 @@ public class Ladrao extends ProgramaLadrao {
 		Point pos = sensor.getPosicao();
 		mapa[pos.x][pos.y]++;
 		rodadas++;
-		int andarNoMenosRepetido = andarNoMenosRepetido();
-		return andarNoMenosRepetido;
+		//int andarNoMenosRepetido = andarNoMenosRepetido();
+		int aproximarDoPoupador = aproximarDoPoupador();
+		return aproximarDoPoupador;
+	} 
+	public int aproximarDoPoupador() {
+		int posPoupador = procurarVisaoPoupador();
+		int tentativa = -1;
+		if(posPoupador != -1) {
+			//subir
+			if(posPoupador < 10 && codigoDoPiso(1) != 0)
+				tentativa = 1;
+			//descer
+			if(posPoupador > 13 && codigoDoPiso(2) != 0)
+				tentativa = 2;
+			//direita
+			if(posPoupador == 12 || posPoupador == 13 && codigoDoPiso(3) != 0)
+				tentativa =  3;
+			//esquerda
+			if(posPoupador == 10 || posPoupador == 11 && codigoDoPiso(4) != 0)
+				tentativa = 4;
+		}
+		if(tentativa != -1) {
+			System.out.println("Vou priorizar caçar o player");
+			return tentativa;
+		}
+			
+		return andarNoMenosRepetido();
+	}
+	public int procurarVisaoPoupador() {
+		int[] visor = sensor.getVisaoIdentificacao();
+		for(int i = 0; i < visor.length;i++)
+			if(visor[i] == Constantes.numeroPoupador01 || visor[i] == Constantes.numeroPoupador02)
+				return i;
+		return -1;
 	}
 	public int andarNoMenosRepetido() {
 		Point pos = sensor.getPosicao();
@@ -50,9 +82,7 @@ public class Ladrao extends ProgramaLadrao {
 			menorValor = mapa[pos.x - 1][pos.y];
 			aux = 4;
 		}
-
-
-		
+	
 		return aux;
 	}
 	public int codigoDoPiso(int direcao) {
