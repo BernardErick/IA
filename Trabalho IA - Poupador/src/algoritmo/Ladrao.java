@@ -27,16 +27,16 @@ public class Ladrao extends ProgramaLadrao {
 		int tentativa = -1;
 		if(posPoupador != -1) {
 			//subir
-			if(posPoupador < 10 && codigoDoPiso(1) != 0)
+			if(posPoupador < 10 && codigoDoPiso(1) == 0)
 				tentativa = 1;
 			//descer
-			if(posPoupador > 13 && codigoDoPiso(2) != 0)
+			if(posPoupador > 13 && codigoDoPiso(2) == 0)
 				tentativa = 2;
 			//direita
-			if(posPoupador == 12 || posPoupador == 13 && codigoDoPiso(3) != 0)
+			if(posPoupador == 12 || posPoupador == 13 && codigoDoPiso(3) == 0)
 				tentativa =  3;
 			//esquerda
-			if(posPoupador == 10 || posPoupador == 11 && codigoDoPiso(4) != 0)
+			if(posPoupador == 10 || posPoupador == 11 && codigoDoPiso(4) == 0)
 				tentativa = 4;
 		}
 		if(tentativa != -1) {
