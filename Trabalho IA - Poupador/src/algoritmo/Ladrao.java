@@ -6,85 +6,67 @@ import java.awt.Point;
 import controle.Constantes;
 
 public class Ladrao extends ProgramaLadrao {
-	public int[][] mapaIndividual = new int[30][30];
-	public int paciencia = 2;
-	//Tentativas de seguir um padrão
-	public int[] padroes = new int[5];
+	public int[][] mapa = new int[30][30];
+	public int rodadas = 0;
 	
-	Point posicaoAtual; 
+	public int esquerda = 2;
+	public int direita = 2;
+	public int cima = 0;
+	public int baixo = 0;
+	
 	public int acao() {
-		posicaoAtual = sensor.getPosicao();
-		mapaIndividual[posicaoAtual.x][posicaoAtual.y]++;
-		
-		int escolha = escolhaSimples();
-		return escolha;
+		Point pos = sensor.getPosicao();
+		mapa[pos.x][pos.y]++;
+		rodadas++;
+		int andarNoMenosRepetido = andarNoMenosRepetido();
+		return andarNoMenosRepetido;
 	}
-	public int escolhaSimples() {
-		//startando com valores que não existem
-		int codigoDoPiso = -3;
-		int tentativa = -1;
-		/*
-		 * Antes de uma tentativa aleatoria,
-		 * tente procurar pelo padrão de qual possibilidade é melhor
-		 * */
-		int padraoMaisRepetido = 0;
-		for(int i = 1; i < padroes.length;i++) {
-			if(padroes[i] > padraoMaisRepetido) {
-				padraoMaisRepetido = padroes[i];
-				tentativa = i;
-			}
+	public int andarNoMenosRepetido() {
+		Point pos = sensor.getPosicao();
+		int menorValor = mapa[pos.x][pos.y];
+		int aux = 0;
+		
+		//cima
+		if(codigoDoPiso(1) == 0 && mapa[pos.x][pos.y - 1] < menorValor) {
+			System.out.println("Cima ta vago e é menor q o menor");
+			menorValor = mapa[pos.x][pos.y - 1];
+			aux = 1;
 		}
-		//Verifico se alguma alteração ocorreu
-		if(tentativa != -1) {
-			//Testando se alguum padrão acerta novamente
-			if(codigoDoPiso(tentativa) == 0) {
-				padroes[tentativa]++;
-				return tentativa;
-			}
-			//Mata o padrão que estava sendo criado
-			else {
-				padroes[tentativa] = 0;
-			}
+//		//baixo
+		if(codigoDoPiso(2) == 0 && mapa[pos.x][pos.y + 1] < menorValor) {
+			System.out.println("Baixo ta vago e é menor q o menor");
+			menorValor = mapa[pos.x][pos.y + 1];
+			aux = 2;
+		}		
+//		//direita
+		if(codigoDoPiso(3) == 0 && mapa[pos.x + 1][pos.y] < menorValor) {
+			System.out.println("Direita ta vago e é menor q o menor");
+			menorValor = mapa[pos.x + 1][pos.y];
+			aux = 3;
+		}
+//		//esquerda 
+		if(codigoDoPiso(4) == 0 && mapa[pos.x - 1][pos.y] < menorValor) {
+			System.out.println("Esquerda ta vago e é menor q o menor");
+			menorValor = mapa[pos.x - 1][pos.y];
+			aux = 4;
 		}
 
-		tentativa = (int) (Math.random() * 5);
-		padroes[tentativa]++;
+
 		
-		if(codigoDoPiso(tentativa) != 0 || tentativa == 0) {
-			escolhaSimples();
-		}	
-		
-		return tentativa;
+		return aux;
 	}
-	/*
-	 * Printa na tela o mapa percorrido até dado momento pelo agente
-	 * 
-	 * */
-	public boolean pesquisarPor(int codigo) {
-		int[] areaVisivel = sensor.getVisaoIdentificacao();
-		for(int ponto : areaVisivel) {
-			if(ponto == codigo) {
-				return true;
-			}
-		}
-		return false;
-	}
-	/*
-	 * Testa o que tem na posição pretendida a ir do agente e diz o que tem lá
-	 * 
-	 * */
 	public int codigoDoPiso(int direcao) {
-		Point pos = posicaoAtual.getLocation();
+		Point pos = sensor.getPosicao();
 		int[] areaVisivel = sensor.getVisaoIdentificacao();
 		int codigo = 0;
-		if(direcao == 1) 
+		if(direcao == 1) //cima
 			codigo = areaVisivel[7];
-		if(direcao == 2)
+		if(direcao == 2)//baixo
 			codigo = areaVisivel[16];
-		if(direcao == 3)
+		if(direcao == 3)//direita
 			codigo = areaVisivel[12];
-		if(direcao == 4)
-			codigo = areaVisivel[16];
+		if(direcao == 4)//esquerda
+			codigo = areaVisivel[11];
 		
 		return codigo;
 	}
@@ -94,9 +76,9 @@ public class Ladrao extends ProgramaLadrao {
 	 * */
 	public void printarMapaIndividual() {
 		String point = "";
-		for(int i = 0; i< mapaIndividual.length;i++) {
-			for(int j = 0; j< mapaIndividual.length;j++) {
-				point+="["+mapaIndividual[i][j]+"] ";
+		for(int i = 0; i< mapa.length;i++) {
+			for(int j = 0; j< mapa.length;j++) {
+				point+="["+mapa[i][j]+"] ";
 			}
 			System.out.println(point);
 			point = "";
