@@ -8,20 +8,84 @@ import controle.Constantes;
 public class Ladrao extends ProgramaLadrao {
 	public int[][] mapa = new int[30][30];
 	public int rodadas = 0;
-	
-	public int esquerda = 2;
-	public int direita = 2;
-	public int cima = 0;
-	public int baixo = 0;
-	
+
 	public int acao() {
 		Point pos = sensor.getPosicao();
 		mapa[pos.x][pos.y]++;
 		rodadas++;
-		//int andarNoMenosRepetido = andarNoMenosRepetido();
+//		int andarNoMenosRepetido = andarNoMenosRepetido();
+//		int aproximarDoPoupador = aproximarDoPoupador();
+//		int aproximarDoPoupadorPeloCheiro = aproximarDoPoupadorPeloCheiro();
+////		int andarilio = andarilo();
+//		if(aproximarDoPoupadorPeloCheiro != -1) {
+//			return aproximarDoPoupadorPeloCheiro;
+//		} else {
+//			return andarNoMenosRepetido;
+//		} 
+//		return aproximarDoPoupadorPeloCheiro == -1 ? 0: aproximarDoPoupadorPeloCheiro;		
+		return andarilio();
+	}
+	
+	public int andarilio() {
+		int andarNoMenosRepetido = andarNoMenosRepetido();
 		int aproximarDoPoupador = aproximarDoPoupador();
-		return aproximarDoPoupador;
-	} 
+		int aproximarDoPoupadorPeloCheiro = aproximarDoPoupadorPeloCheiro();
+		if(aproximarDoPoupadorPeloCheiro != -1) {
+			return aproximarDoPoupadorPeloCheiro;
+		} if(aproximarDoPoupador != -1) {
+			return aproximarDoPoupador;
+		} else {
+		return andarNoMenosRepetido;
+		}
+	}
+	
+	
+
+	
+
+	public int aproximarDoPoupadorPeloCheiro() {
+		int posPoupadorCheiroso = procurarVisaoPoupadorCheiroRecente();
+//		System.out.println(posPoupadorCheiroso);
+		int cima = 1;
+		int baixo = 6;
+		int dir= 4;
+		int esque = 3;
+		int tentativa = -1;
+		int moveUp = 1;
+		int moveDown = 2;
+		int moveRight = 3;
+		int moveLeft = 4;
+		//subir
+		if(posPoupadorCheiroso == cima) {
+			tentativa = moveUp;
+		}
+		//descer
+		if(posPoupadorCheiroso == baixo) {
+			tentativa = moveDown;
+		}
+		//direita
+		if(posPoupadorCheiroso == dir) {
+			tentativa =  moveRight;
+		}
+		//esquerda
+		if(posPoupadorCheiroso == esque) {
+			tentativa = moveLeft;
+		}
+		//Tentar subir
+		if(posPoupadorCheiroso == 0 || posPoupadorCheiroso == 2 && codigoDoPiso(1) == 0) {
+			tentativa = moveUp;
+		}
+		//Tentar descer
+		if(posPoupadorCheiroso == 5 || posPoupadorCheiroso == 7 && codigoDoPiso(2) == 0) {
+			tentativa = moveDown;
+		}
+		
+		if(tentativa != -1) {
+//			System.out.println("Vou priorizar caçar o player indo por: "+tentativa);
+			return tentativa;
+		}
+		return -1;
+	}
 	public int aproximarDoPoupador() {
 		int posPoupador = procurarVisaoPoupador();
 		int tentativa = -1;
@@ -40,11 +104,10 @@ public class Ladrao extends ProgramaLadrao {
 				tentativa = 4;
 		}
 		if(tentativa != -1) {
-			System.out.println("Vou priorizar caçar o player");
+//			System.out.println("Vou priorizar caçar o player indo por: "+tentativa);
 			return tentativa;
 		}
-			
-		return andarNoMenosRepetido();
+		return -1;
 	}
 	public int procurarVisaoPoupador() {
 		int[] visor = sensor.getVisaoIdentificacao();
@@ -53,6 +116,19 @@ public class Ladrao extends ProgramaLadrao {
 				return i;
 		return -1;
 	}
+	
+	
+	public int procurarVisaoPoupadorCheiroRecente() {
+		int[] cheiros = sensor.getAmbienteOlfatoPoupador();
+		for(int i = 0; i < cheiros.length; i++) {
+			if(cheiros[i] > 0) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	
 	public int andarNoMenosRepetido() {
 		Point pos = sensor.getPosicao();
 		int menorValor = mapa[pos.x][pos.y];
@@ -60,25 +136,25 @@ public class Ladrao extends ProgramaLadrao {
 		
 		//cima
 		if(codigoDoPiso(1) == 0 && mapa[pos.x][pos.y - 1] < menorValor) {
-			System.out.println("Cima ta vago e é menor q o menor");
+//			System.out.println("Cima ta vago e é menor q o menor");
 			menorValor = mapa[pos.x][pos.y - 1];
 			aux = 1;
 		}
 //		//baixo
 		if(codigoDoPiso(2) == 0 && mapa[pos.x][pos.y + 1] < menorValor) {
-			System.out.println("Baixo ta vago e é menor q o menor");
+//			System.out.println("Baixo ta vago e é menor q o menor");
 			menorValor = mapa[pos.x][pos.y + 1];
 			aux = 2;
 		}		
 //		//direita
 		if(codigoDoPiso(3) == 0 && mapa[pos.x + 1][pos.y] < menorValor) {
-			System.out.println("Direita ta vago e é menor q o menor");
+//			System.out.println("Direita ta vago e é menor q o menor");
 			menorValor = mapa[pos.x + 1][pos.y];
 			aux = 3;
 		}
 //		//esquerda 
 		if(codigoDoPiso(4) == 0 && mapa[pos.x - 1][pos.y] < menorValor) {
-			System.out.println("Esquerda ta vago e é menor q o menor");
+//			System.out.println("Esquerda ta vago e é menor q o menor");
 			menorValor = mapa[pos.x - 1][pos.y];
 			aux = 4;
 		}
@@ -110,7 +186,7 @@ public class Ladrao extends ProgramaLadrao {
 			for(int j = 0; j< mapa.length;j++) {
 				point+="["+mapa[i][j]+"] ";
 			}
-			System.out.println(point);
+//			System.out.println(point);
 			point = "";
 		}
 	}
