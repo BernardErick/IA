@@ -8,41 +8,52 @@ import controle.Constantes;
 public class Ladrao extends ProgramaLadrao {
 	public int[][] mapa = new int[30][30];
 	public int rodadas = 0;
-
+	public boolean parado;
+	public int pacienciaMinima = 700;
+	public int pacienciaMaxima = 1000;
+	public int paciencia = pacienciaMaxima;
+	public int valorPaciencia = 10;
 	public int acao() {
 		Point pos = sensor.getPosicao();
 		mapa[pos.x][pos.y]++;
 		rodadas++;
-//		int andarNoMenosRepetido = andarNoMenosRepetido();
-//		int aproximarDoPoupador = aproximarDoPoupador();
-//		int aproximarDoPoupadorPeloCheiro = aproximarDoPoupadorPeloCheiro();
-////		int andarilio = andarilo();
-//		if(aproximarDoPoupadorPeloCheiro != -1) {
-//			return aproximarDoPoupadorPeloCheiro;
-//		} else {
-//			return andarNoMenosRepetido;
-//		} 
-//		return aproximarDoPoupadorPeloCheiro == -1 ? 0: aproximarDoPoupadorPeloCheiro;		
-		return andarilio();
+		paciencia--;
+		//Funcoes de premissas
+		loboBeta();
+		return andarilio();		
+		
+		
 	}
 	
 	public int andarilio() {
 		int andarNoMenosRepetido = andarNoMenosRepetido();
 		int aproximarDoPoupador = aproximarDoPoupador();
 		int aproximarDoPoupadorPeloCheiro = aproximarDoPoupadorPeloCheiro();
+
+		//Prioridade 1
 		if(aproximarDoPoupadorPeloCheiro != -1) {
+			if(loboSolitario() != -1) {
+				return loboSolitario();
+			}
 			return aproximarDoPoupadorPeloCheiro;
-		} if(aproximarDoPoupador != -1) {
-			return aproximarDoPoupador;
-		} else {
-		return andarNoMenosRepetido;
 		}
+		//Prioridade 2
+		if(aproximarDoPoupador != -1) {
+			if(loboSolitario() != -1) {
+				return loboSolitario();
+			}
+			return aproximarDoPoupador;
+		}
+		//Prioridade 3
+//		if(camperarBanco() != -1) {
+//			return camperarBanco();
+//		}
+		//Prioridade 4
+		return andarNoMenosRepetido;
+		
 	}
 	
 	
-
-	
-
 	public int aproximarDoPoupadorPeloCheiro() {
 		int posPoupadorCheiroso = procurarVisaoPoupadorCheiroRecente();
 //		System.out.println(posPoupadorCheiroso);
@@ -88,7 +99,10 @@ public class Ladrao extends ProgramaLadrao {
 	}
 	public int aproximarDoPoupador() {
 		int posPoupador = procurarVisaoPoupador();
+		
+		
 		int tentativa = -1;
+		int[] vl = sensor.getVisaoIdentificacao();
 		if(posPoupador != -1) {
 			//subir
 			if(posPoupador < 10 && codigoDoPiso(1) == 0)
@@ -103,12 +117,89 @@ public class Ladrao extends ProgramaLadrao {
 			if(posPoupador == 10 || posPoupador == 11 && codigoDoPiso(4) == 0)
 				tentativa = 4;
 		}
+
+	
 		if(tentativa != -1) {
 //			System.out.println("Vou priorizar caçar o player indo por: "+tentativa);
 			return tentativa;
 		}
 		return -1;
 	}
+	
+	public int loboSolitario() {
+		int posLadraoComPoupador = procurarVisaoLadraoComPoupador();
+		int andarNoMenosRepetido = andarNoMenosRepetido();
+		if(posLadraoComPoupador != -1 && paciencia <= pacienciaMinima) {
+			//Se sente um lobo ladrão solitario e vai embora
+			return andarNoMenosRepetido;
+		}
+		return -1;
+	}
+	public void loboBeta() {
+		int posLadraoPoupador = procurarVisaoLadraoComPoupador();
+		if(posLadraoPoupador == -1 && paciencia < pacienciaMinima) {
+			System.out.println("Agora estou sozinho e recuperando energias...");
+			paciencia+=valorPaciencia;
+		}
+		if(paciencia >= pacienciaMaxima) {
+			System.out.println("Energias Recaregadas! Virei chad");
+		}
+	}
+	public int camperarBanco() {
+		int posBanco = procurarVisaoBanco();
+		if(posBanco != -1) {
+			Point banco = Constantes.posicaoBanco;
+			Point myPos = sensor.getPosicao();
+			//cima
+			if(myPos.y > banco.y && codigoDoPiso(1) == 0) {
+				return 1;
+			}
+			//baixo
+			if(myPos.y < banco.y && codigoDoPiso(2) == 0) {
+				return 2;
+			}
+			//direira
+			if(myPos.x < banco.x && codigoDoPiso(3) == 0) {
+				return 3;
+			}
+			//esquerda
+			if(myPos.x > banco.x && codigoDoPiso(4) == 0) {
+				return 4;
+			}
+			return andarNoMenosRepetido();
+
+		}
+		return posBanco;
+	}
+	
+	public int procurarVisaoBanco() {
+		int[] visor = sensor.getVisaoIdentificacao();
+		for(int i = 0; i < visor.length;i++)
+			if(visor[i] == Constantes.numeroBanco)
+				return i;
+		return -1;
+	}
+	
+	public int procurarVisaoLadrao() {
+		int[] visor = sensor.getVisaoIdentificacao();
+		for(int i = 0; i < visor.length;i++)
+			if(visor[i] == Constantes.numeroLadrao01 || visor[i] == Constantes.numeroLadrao02 || visor[i] == Constantes.numeroLadrao03 || visor[i] == Constantes.numeroLadrao04)
+				return i;
+		return -1;
+	}
+	
+	public int procurarVisaoLadraoComPoupador() {
+		boolean temPop = false;
+		int[] visor = sensor.getVisaoIdentificacao();
+		for(int i = 0; i < visor.length;i++) {
+			if(visor[i] == Constantes.numeroPoupador01 || visor[i] == Constantes.numeroPoupador02)
+				temPop = true;
+			if(visor[i] == Constantes.numeroLadrao01 || visor[i] == Constantes.numeroLadrao02 || visor[i] == Constantes.numeroLadrao03 || visor[i] == Constantes.numeroLadrao04 && temPop)
+				return i;
+			}
+		return -1;
+	}
+	
 	public int procurarVisaoPoupador() {
 		int[] visor = sensor.getVisaoIdentificacao();
 		for(int i = 0; i < visor.length;i++)
