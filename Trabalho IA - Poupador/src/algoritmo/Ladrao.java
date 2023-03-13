@@ -13,7 +13,6 @@ public class Ladrao extends ProgramaLadrao {
 	public int pacienciaMaxima = 1000;
 	public int paciencia = pacienciaMaxima;
 	public int valorPaciencia = 10;
-	public boolean encostadoNoBanco = false;
 	public int acao() {
 		Point pos = sensor.getPosicao();
 		mapa[pos.x][pos.y]++;
@@ -22,6 +21,8 @@ public class Ladrao extends ProgramaLadrao {
 		//Funcoes de premissas
 		loboBeta();
 		return andarilio();		
+		
+		
 	}
 	
 	public int andarilio() {
@@ -44,6 +45,10 @@ public class Ladrao extends ProgramaLadrao {
 			return aproximarDoPoupador;
 		}
 		//Prioridade 3
+//		if(camperarBanco() != -1) {
+//			return camperarBanco();
+//		}
+		//Prioridade 4
 		return andarNoMenosRepetido;
 		
 	}
@@ -94,10 +99,7 @@ public class Ladrao extends ProgramaLadrao {
 	}
 	public int aproximarDoPoupador() {
 		int posPoupador = procurarVisaoPoupador();
-		
-		
 		int tentativa = -1;
-		int[] vl = sensor.getVisaoIdentificacao();
 		if(posPoupador != -1) {
 			//subir
 			if(posPoupador < 10 && codigoDoPiso(1) == 0)
@@ -140,14 +142,8 @@ public class Ladrao extends ProgramaLadrao {
 			System.out.println("Energias Recaregadas! Virei chad");
 		}
 	}
-	public int procurarVisaoBanco() {
-		int[] visor = sensor.getVisaoIdentificacao();
-		for(int i = 0; i < visor.length;i++)
-			if(visor[i] == Constantes.numeroBanco)
-				return i;
-		return -1;
-	}
 	
+
 	public int procurarVisaoLadrao() {
 		int[] visor = sensor.getVisaoIdentificacao();
 		for(int i = 0; i < visor.length;i++)
