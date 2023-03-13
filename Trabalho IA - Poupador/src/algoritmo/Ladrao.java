@@ -31,6 +31,10 @@ public class Ladrao extends ProgramaLadrao {
 		int aproximarDoPoupadorPeloCheiro = aproximarDoPoupadorPeloCheiro();
 
 		//Prioridade 1
+		if(roubar() != -1) {
+			System.out.println("Opa roubei kkkk");
+			return roubar();
+		}
 		if(aproximarDoPoupadorPeloCheiro != -1) {
 			if(loboSolitario() != -1) {
 				return loboSolitario();
@@ -113,6 +117,7 @@ public class Ladrao extends ProgramaLadrao {
 			//esquerda
 			if(posPoupador == 10 || posPoupador == 11 && codigoDoPiso(4) == 0)
 				tentativa = 4;
+	
 		}
 
 	
@@ -132,6 +137,7 @@ public class Ladrao extends ProgramaLadrao {
 		}
 		return -1;
 	}
+	//Procurar um jeito de se juntar
 	public void loboBeta() {
 		int posLadraoPoupador = procurarVisaoLadraoComPoupador();
 		if(posLadraoPoupador == -1 && paciencia < pacienciaMinima) {
@@ -215,6 +221,26 @@ public class Ladrao extends ProgramaLadrao {
 		}
 	
 		return aux;
+	}
+	public int roubar() {
+		int tentativa = -1;
+		//cima
+		if(codigoDoPiso(1) == Constantes.numeroPoupador01 || codigoDoPiso(1) == Constantes.numeroPoupador02) {
+			return 1;
+		}
+		//baixo
+		if(codigoDoPiso(2) == Constantes.numeroPoupador01 || codigoDoPiso(2) == Constantes.numeroPoupador02) {
+			return 2;
+		}
+		//direita
+		if(codigoDoPiso(3) == Constantes.numeroPoupador01 || codigoDoPiso(3) == Constantes.numeroPoupador02) {
+			return 3;
+		}
+		//esquerda
+		if(codigoDoPiso(4) == Constantes.numeroPoupador01 || codigoDoPiso(4) == Constantes.numeroPoupador02) {
+			return 4;
+		}
+		return tentativa;
 	}
 	public int codigoDoPiso(int direcao) {
 		Point pos = sensor.getPosicao();
