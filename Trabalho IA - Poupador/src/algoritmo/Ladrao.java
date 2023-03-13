@@ -13,6 +13,7 @@ public class Ladrao extends ProgramaLadrao {
 	public int pacienciaMaxima = 1000;
 	public int paciencia = pacienciaMaxima;
 	public int valorPaciencia = 10;
+	public boolean encostadoNoBanco = false;
 	public int acao() {
 		Point pos = sensor.getPosicao();
 		mapa[pos.x][pos.y]++;
@@ -21,8 +22,6 @@ public class Ladrao extends ProgramaLadrao {
 		//Funcoes de premissas
 		loboBeta();
 		return andarilio();		
-		
-		
 	}
 	
 	public int andarilio() {
@@ -45,10 +44,6 @@ public class Ladrao extends ProgramaLadrao {
 			return aproximarDoPoupador;
 		}
 		//Prioridade 3
-//		if(camperarBanco() != -1) {
-//			return camperarBanco();
-//		}
-		//Prioridade 4
 		return andarNoMenosRepetido;
 		
 	}
@@ -145,33 +140,6 @@ public class Ladrao extends ProgramaLadrao {
 			System.out.println("Energias Recaregadas! Virei chad");
 		}
 	}
-	public int camperarBanco() {
-		int posBanco = procurarVisaoBanco();
-		if(posBanco != -1) {
-			Point banco = Constantes.posicaoBanco;
-			Point myPos = sensor.getPosicao();
-			//cima
-			if(myPos.y > banco.y && codigoDoPiso(1) == 0) {
-				return 1;
-			}
-			//baixo
-			if(myPos.y < banco.y && codigoDoPiso(2) == 0) {
-				return 2;
-			}
-			//direira
-			if(myPos.x < banco.x && codigoDoPiso(3) == 0) {
-				return 3;
-			}
-			//esquerda
-			if(myPos.x > banco.x && codigoDoPiso(4) == 0) {
-				return 4;
-			}
-			return andarNoMenosRepetido();
-
-		}
-		return posBanco;
-	}
-	
 	public int procurarVisaoBanco() {
 		int[] visor = sensor.getVisaoIdentificacao();
 		for(int i = 0; i < visor.length;i++)
