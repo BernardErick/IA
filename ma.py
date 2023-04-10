@@ -7,11 +7,11 @@ class Node:
     custo = 0
     h = 0
     peso = 0
-    def _init_(self,id):
+    def __init__(self,id):
         self.id = id
-    def _lt_(self, other):
+    def __lt__(self, other):
         return self.custo < other.custo          
-    def str(self):
+    def _str_(self):
         return "Node(" + str(self.id) + ")"
 class Grafo:
     
@@ -19,8 +19,7 @@ class Grafo:
     n = 0
     direcionado = False
     
-    def _init_(self,n,direcionado):
-
+    def __init__(self,n,direcionado):
         self.n = n
         self.direcionado = direcionado
         for i in range(n):
@@ -59,7 +58,7 @@ class Grafo:
             
             # Expansão de vizinhos            
             for i in range(self.n):                
-                if(self.matriz[aux.id][i] == 1 and i != aux.pai.id):
+                if(self.matriz[aux.id][i] != 0 and i != aux.pai.id):
                     node = Node(i)
                     node.pai = aux
                     q.put(node)
@@ -68,29 +67,28 @@ class Grafo:
         return aux
     
     def bp(self,s,t):
-            pilha = []
+        pilha = []
 
-            node = Node(s)
-            node.pai = Node(-1)
+        node = Node(s)
+        node.pai = Node(-1)
 
-            pilha.insert(0,node)
+        pilha.insert(0,node)
 
-            while(len(pilha) != 0):
-                aux = pilha.pop()
-                # Teste de Objetivo           
-                if(aux.id == t):
-                    return aux
-                # Teste de Objetivo
-                
-                # Expansão de vizinhos            
-                for i in range(self.n):                
-                    if(self.matriz[aux.id][i] == 1 and i != aux.pai.id):
-                        node = Node(i)
-                        node.pai = aux
-                        pilha.insert(0,node)
-                # Expansão de vizinhos
+        while(len(pilha) != 0):
+            aux = pilha.pop()
+            # Teste de Objetivo           
+            if(aux.id == t):
+                return aux
+            # Teste de Objetivo
             
-            return aux
+            # Expansão de vizinhos            
+            for i in range(self.n):                
+                if(self.matriz[aux.id][i] != 0 and i != aux.pai.id):
+                    node = Node(i)
+                    node.pai = aux
+                    pilha.insert(0,node)
+            # Expansão de vizinhos     
+        return aux
     
     def bcu(self,s,t):
         pq = queue.PriorityQueue()
@@ -199,58 +197,25 @@ def heuristica_gen(n, target):
         print(str(i)+": "+str(arr[i]))
     return arr
 
-g = Grafo(10, False)
-g.printMatriz()
-
-h = heuristica_gen(10,6)
-
 # Sibiu - 0
 # Fagaras - 1
 # Rimnicu Vilceu - 2
 # Pitesti - 3
 # Bucharest - 4
 
-g.addAresta(0,1,6)
-g.addAresta(0,2,3)
-g.addAresta(2,3,1)
-g.addAresta(2,3,7)
-g.addAresta(3,5,3)
-g.addAresta(4,5,2)
-g.addAresta(5,7,5)
-g.addAresta(5,6,3)
-g.addAresta(1,8,2)
-g.addAresta(1,9,3)
-g.addAresta(8,9,1)
-g.addAresta(8,7,8)
-g.addAresta(9,7,5)
-g.addAresta(7,6,5)
+
+g = Grafo(5,False)
+g.printMatriz()
+
+g.addAresta(0, 1, 80)
+g.addAresta(0, 2, 99)
+g.addAresta(1, 3, 97)
+g.addAresta(3, 4, 101)
+g.addAresta(2, 4, 211)
 
 g.printMatriz()
 
-objetivo = g.bastar(0,6,h)
-
-while(objetivo.id != -1):
-    print(objetivo.id)
-    objetivo = objetivo.pai
-
-"""
-g = Grafo(10,False)
-g.printMatriz()
-
-g.addAresta(0, 2, 1)
-g.addAresta(1, 3, 1)
-g.addAresta(2, 3, 1)
-g.addAresta(3, 5, 1)
-g.addAresta(5, 4, 1)
-g.addAresta(3, 6, 1)
-g.addAresta(6, 9, 1)
-g.addAresta(4, 7, 1)
-g.addAresta(4, 8, 1)
-g.addAresta(8, 9, 1)
-
-g.printMatriz()
-
-objetivo = g.bl(0, 9)
+objetivo = g.bl(0, 4)
 
 print("-=-=-=-=-=-BUSCA EM LARGURA-=-=-=-=-")   
 while(objetivo.id != -1):
@@ -259,15 +224,27 @@ while(objetivo.id != -1):
 
 print("-=-=-=-=-=-BUSCA EM PROFUNDIDADE-=-=-=--=--")
 
-buscaEmBp = g.bp(0,9)
+buscaEmBp = g.bp(0,4)
 while(buscaEmBp.id != -1):
     print(buscaEmBp.id)
     buscaEmBp = buscaEmBp.pai
 
-buscamEmBcu = g.bcu(0, 9)
+buscamEmBcu = g.bcu(0, 4)
 print("-=-=-=-=-=-BUSCA DE CUSTO UNIFORME-=-=-=-=-")   
 while(buscamEmBcu.id != -1):
     print(buscamEmBcu.id)
     buscamEmBcu = buscamEmBcu.pai
 
-"""
+h = heuristica_gen(5,4)
+
+buscaEmBme = g.bme(0,4,h)
+print("-=-=-=-=-=-BUSCA DE MELHOR ESCOLHA-=-=-=-=-")   
+while(buscaEmBme.id != -1):
+    print(buscaEmBme.id)
+    buscaEmBme = buscaEmBme.pai
+
+buscaEmAStar = g.bastar(0,4,h)
+print("-=-=-=-=-=-BUSCA DE A* -=-=-=-=-")   
+while(buscaEmAStar.id != -1):
+    print(buscaEmAStar.id)
+    buscaEmAStar = buscaEmAStar.paiv
