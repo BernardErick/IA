@@ -247,4 +247,4 @@ buscaEmAStar = g.bastar(0,4,h)
 print("-=-=-=-=-=-BUSCA DE A* -=-=-=-=-")   
 while(buscaEmAStar.id != -1):
     print(buscaEmAStar.id)
-    buscaEmAStar = buscaEmAStar.paiv
+    buscaEmAStar = buscaEmAStar.pai
